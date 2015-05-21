@@ -184,6 +184,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   - Use unique naming conventions with separators for sub-modules.
 
   *Why?*: Unique names help avoid module name collisions. Separators help define modules and their submodule hierarchy. For example `app` may be your root module while `app.dashboard` and `app.users` may be modules that are used as dependencies of `app`.
+  
+  - Note: For longer names, use camelCase conventions. For example, `app.userManagement` instead of spinal-case like `app.user-management`.
 
 ### Definitions (aka Setters)
 ###### [Style [Y021](#style-y021)]
@@ -308,8 +310,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   ```html
   <!-- recommended -->
-  <div ng-controller="Customer as customer">
-      {{ customer.name }}
+  <div ng-controller="Customer as customerVm">
+      {{ customerVm.name }}
   </div>
   ```
 
@@ -334,7 +336,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   ```javascript
   /* recommended - but see next section */
-  function Customer() {
+  function CustomerController() {
       this.name = {};
       this.sendMessage = function() { };
   }
@@ -357,10 +359,10 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   ```javascript
   /* recommended */
-  function Customer() {
-      var vm = this;
-      vm.name = {};
-      vm.sendMessage = function() { };
+  function CustomerController() {
+      var customerVm = this;
+      customerVm.name = {};
+      customerVm.sendMessage = function() { };
   }
   ```
 
@@ -368,23 +370,23 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   ```javascript
   /* jshint validthis: true */
-  var vm = this;
+  var customerVm = this;
   ```
 
-  Note: When creating watches in a controller using `controller as`, you can watch the `vm.*` member using the following syntax. (Create watches with caution as they add more load to the digest cycle.)
+  Note: When creating watches in a controller using `controller as`, you can watch the `customerVm.*` member using the following syntax. (Create watches with caution as they add more load to the digest cycle.)
 
   ```html
-  <input ng-model="vm.title"/>
+  <input ng-model="customerVm.title"/>
   ```
 
   ```javascript
   function SomeController($scope, $log) {
-      var vm = this;
-      vm.title = 'Some Title';
+      var someVm = this;
+      someVm.title = 'Some Title';
 
-      $scope.$watch('vm.title', function(current, original) {
-          $log.info('vm.title was %s', original);
-          $log.info('vm.title is now %s', current);
+      $scope.$watch('someVm.title', function(current, original) {
+          $log.info('someVm.title was %s', original);
+          $log.info('someVm.title is now %s', current);
       });
   }
   ```
@@ -418,14 +420,14 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   ```javascript
   /* recommended */
-  function Sessions() {
-      var vm = this;
+  function SessionsController() {
+      var sessionsVm = this;
 
-      vm.gotoSession = gotoSession;
-      vm.refresh = refresh;
-      vm.search = search;
-      vm.sessions = [];
-      vm.title = 'Sessions';
+      sessionsVm.gotoSession = gotoSession;
+      sessionsVm.refresh = refresh;
+      sessionsVm.search = search;
+      sessionsVm.sessions = [];
+      sessionsVm.title = 'Sessions';
 
       ////////////
 
@@ -468,14 +470,14 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   ```javascript
   /* recommended */
-  function Sessions(dataservice) {
-      var vm = this;
+  function SessionsController(dataservice) {
+      var sessionsVm = this;
 
-      vm.gotoSession = gotoSession;
-      vm.refresh = dataservice.refresh; // 1 liner is OK
-      vm.search = search;
-      vm.sessions = [];
-      vm.title = 'Sessions';
+      sessionsVm.gotoSession = gotoSession;
+      sessionsVm.refresh = dataservice.refresh; // 1 liner is OK
+      sessionsVm.search = search;
+      sessionsVm.sessions = [];
+      sessionsVm.title = 'Sessions';
   ```
 
 ### Function Declarations to Hide Implementation Details
@@ -522,7 +524,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   }
   ```
 
-  Notice that the important stuff is scattered in the preceding example. In the example below, notice that the important stuff is up top. For example, the members bound to the controller such as `vm.avengers` and `vm.title`. The implementation details are down below. This is just easier to read.
+  Notice that the important stuff is scattered in the preceding example. In the example below, notice that the important stuff is up top. For example, the members bound to the controller such as `avengersVm.avengers` and `avengersVm.title`. The implementation details are down below. This is just easier to read.
 
   ```javascript
   /*
@@ -530,11 +532,11 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
    * Using function declarations
    * and bindable members up top.
    */
-  function Avengers(dataservice, logger) {
-      var vm = this;
-      vm.avengers = [];
-      vm.getAvengers = getAvengers;
-      vm.title = 'Avengers';
+  function AvengersController(dataservice, logger) {
+      var avengersVm = this;
+      avengersVm.avengers = [];
+      avengersVm.getAvengers = getAvengers;
+      avengersVm.title = 'Avengers';
 
       activate();
 
@@ -546,8 +548,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
       function getAvengers() {
           return dataservice.getAvengers().then(function(data) {
-              vm.avengers = data;
-              return vm.avengers;
+              avengersVm.avengers = data;
+              return avengersVm.avengers;
           });
       }
   }
@@ -599,15 +601,15 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   ```javascript
   /* recommended */
-  function Order(creditService) {
-      var vm = this;
-      vm.checkCredit = checkCredit;
-      vm.isCreditOk;
-      vm.total = 0;
+  function OrderController(creditService) {
+      var orderVm = this;
+      orderVm.checkCredit = checkCredit;
+      orderVm.isCreditOk;
+      orderVm.total = 0;
 
       function checkCredit() {
-         return creditService.isOrderTotalOk(vm.total)
-            .then(function(isOk) { vm.isCreditOk = isOk; })
+         return creditService.isOrderTotalOk(orderVm.total)
+            .then(function(isOk) { orderVm.isCreditOk = isOk; })
             .catch(showServiceError);
       };
   }
@@ -625,7 +627,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   - When a controller must be paired with a view and either component may be re-used by other controllers or views, define controllers along with their routes.
 
-    Note: If a View is loaded via another means besides a route, then use the `ng-controller="Avengers as vm"` syntax.
+    Note: If a View is loaded via another means besides a route, then use the `ng-controller="AvengersController as avengersVm"` syntax.
 
     *Why?*: Pairing the controller in the route allows different routes to invoke different pairs of controllers and views. When controllers are assigned in the view using [`ng-controller`](https://docs.angularjs.org/api/ng/directive/ngController), that view is always associated with the same controller.
 
@@ -663,8 +665,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
       $routeProvider
           .when('/avengers', {
               templateUrl: 'avengers.html',
-              controller: 'Avengers',
-              controllerAs: 'vm'
+              controller: 'AvengersController',
+              controllerAs: 'avengersVm'
           });
   }
   ```
@@ -939,13 +941,13 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   // controller calling the dataservice factory
   angular
       .module('app.avengers')
-      .controller('Avengers', Avengers);
+      .controller('AvengersController', AvengersController);
 
-  Avengers.$inject = ['dataservice', 'logger'];
+  AvengersController.$inject = ['dataservice', 'logger'];
 
-  function Avengers(dataservice, logger) {
-      var vm = this;
-      vm.avengers = [];
+  function AvengersController(dataservice, logger) {
+      var avengersVm = this;
+      avengersVm.avengers = [];
 
       activate();
 
@@ -958,8 +960,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
       function getAvengers() {
           return dataservice.getAvengers()
               .then(function(data) {
-                  vm.avengers = data;
-                  return vm.avengers;
+                  avengersVm.avengers = data;
+                  return avengersVm.avengers;
               });
       }
   }
@@ -1004,8 +1006,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
                  * Step 3
                  * set the data and resolve the promise
                  */
-                vm.avengers = data;
-                return vm.avengers;
+                avengersVm.avengers = data;
+                return avengersVm.avengers;
         });
   }
   ```
@@ -1215,7 +1217,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
           },
           link: linkFunc,
           controller: ExampleController,
-          controllerAs: 'vm',
+          controllerAs: 'exampleVm',
           bindToController: true // because the scope is isolated
       };
 
@@ -1224,8 +1226,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
       function linkFunc(scope, el, attr, ctrl) {
           console.log('LINK: scope.min = %s *** should be undefined', scope.min);
           console.log('LINK: scope.max = %s *** should be undefined', scope.max);
-          console.log('LINK: scope.vm.min = %s', scope.vm.min);
-          console.log('LINK: scope.vm.max = %s', scope.vm.max);
+          console.log('LINK: scope.vm.min = %s', scope.exampleVm.min);
+          console.log('LINK: scope.vm.max = %s', scope.exampleVm.max);
       }
   }
 
@@ -1233,33 +1235,33 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   function ExampleController($scope) {
       // Injecting $scope just for comparison
-      var vm = this;
+      var exampleVm = this;
 
-      vm.min = 3;
+      exampleVm.min = 3;
 
-      console.log('CTRL: $scope.vm.min = %s', $scope.vm.min);
-      console.log('CTRL: $scope.vm.max = %s', $scope.vm.max);
-      console.log('CTRL: vm.min = %s', vm.min);
-      console.log('CTRL: vm.max = %s', vm.max);
+      console.log('CTRL: $scope.vm.min = %s', $scope.exampleVm.min);
+      console.log('CTRL: $scope.vm.max = %s', $scope.exampleVm.max);
+      console.log('CTRL: vm.min = %s', exampleVm.min);
+      console.log('CTRL: vm.max = %s', exampleVm.max);
   }
   ```
 
   ```html
   <!-- example.directive.html -->
   <div>hello world</div>
-  <div>max={{vm.max}}<input ng-model="vm.max"/></div>
-  <div>min={{vm.min}}<input ng-model="vm.min"/></div>
+  <div>max={{exampleVm.max}}<input ng-model="exampleVm.max"/></div>
+  <div>min={{exampleVm.min}}<input ng-model="exampleVm.min"/></div>
   ```
 
     Note: You can also name the controller when you inject it into the link function and access directive attributes as properties of the controller.
 
   ```javascript
   // Alternative to above example
-  function linkFunc(scope, el, attr, vm) {
+  function linkFunc(scope, el, attr, exampleVm) {
       console.log('LINK: scope.min = %s *** should be undefined', scope.min);
       console.log('LINK: scope.max = %s *** should be undefined', scope.max);
-      console.log('LINK: vm.min = %s', vm.min);
-      console.log('LINK: vm.max = %s', vm.max);
+      console.log('LINK: vm.min = %s', exampleVm.min);
+      console.log('LINK: vm.max = %s', exampleVm.max);
   }
   ```
 
@@ -1288,7 +1290,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
               max: '='
           },
           controller: ExampleController,
-          controllerAs: 'vm',
+          controllerAs: 'exampleVm',
           bindToController: true
       };
 
@@ -1296,18 +1298,18 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   }
 
   function ExampleController() {
-      var vm = this;
-      vm.min = 3;
-      console.log('CTRL: vm.min = %s', vm.min);
-      console.log('CTRL: vm.max = %s', vm.max);
+      var exampleVm = this;
+      exampleVm.min = 3;
+      console.log('CTRL: exampleVm.min = %s', exampleVm.min);
+      console.log('CTRL: exampleVm.max = %s', exampleVm.max);
   }
   ```
 
   ```html
   <!-- example.directive.html -->
   <div>hello world</div>
-  <div>max={{vm.max}}<input ng-model="vm.max"/></div>
-  <div>min={{vm.min}}<input ng-model="vm.min"/></div>
+  <div>max={{exampleVm.max}}<input ng-model="exampleVm.max"/></div>
+  <div>min={{exampleVm.min}}<input ng-model="exampleVm.min"/></div>
   ```
 
 **[Back to top](#table-of-contents)**
@@ -1340,10 +1342,10 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   ```javascript
   /* recommended */
-  function Avengers(dataservice) {
-      var vm = this;
-      vm.avengers = [];
-      vm.title = 'Avengers';
+  function AvengersController(dataservice) {
+      var avengersVm = this;
+      avengersVm.avengers = [];
+      avengersVm.title = 'Avengers';
 
       activate();
 
@@ -1351,8 +1353,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
       function activate() {
           return dataservice.getAvengers().then(function(data) {
-              vm.avengers = data;
-              return vm.avengers;
+              avengersVm.avengers = data;
+              return avengersVm.avengers;
           });
       }
   }
@@ -1400,8 +1402,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
       $routeProvider
           .when('/avengers', {
               templateUrl: 'avengers.html',
-              controller: 'Avengers',
-              controllerAs: 'vm',
+              controller: 'AvengersController',
+              controllerAs: 'avengersVm',
               resolve: {
                   moviesPrepService: function(movieService) {
                       return movieService.getMovies();
@@ -1413,12 +1415,12 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   // avengers.js
   angular
       .module('app')
-      .controller('Avengers', Avengers);
+      .controller('AvengersController', AvengersController);
 
-  Avengers.$inject = ['moviesPrepService'];
-  function Avengers(moviesPrepService) {
-      var vm = this;
-      vm.movies = moviesPrepService.movies;
+  AvengersController.$inject = ['moviesPrepService'];
+  function AvengersController(moviesPrepService) {
+      var avengersVm = this;
+      avengersVm.movies = moviesPrepService.movies;
   }
   ```
 
@@ -1436,8 +1438,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
       $routeProvider
           .when('/avengers', {
               templateUrl: 'avengers.html',
-              controller: 'Avengers',
-              controllerAs: 'vm',
+              controller: 'AvengersController',
+              controllerAs: 'avengersVm',
               resolve: {
                   moviesPrepService: moviesPrepService
               }
@@ -1451,12 +1453,12 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   // avengers.js
   angular
       .module('app')
-      .controller('Avengers', Avengers);
+      .controller('AvengersController', AvengersController);
 
-  Avengers.$inject = ['moviesPrepService'];
-  function Avengers(moviesPrepService) {
-        var vm = this;
-        vm.movies = moviesPrepService.movies;
+  AvengersController.$inject = ['moviesPrepService'];
+  function AvengersController(moviesPrepService) {
+        var avengersVm = this;
+        avengersVm.movies = moviesPrepService.movies;
   }
   ```
     Note: The code example's dependency on `movieService` is not minification safe on its own. For details on how to make this code minification safe, see the sections on [dependency injection](#manual-annotating-for-dependency-injection) and on [minification and annotation](#minification-and-annotation).
@@ -1476,9 +1478,9 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     /* avoid - not minification-safe*/
     angular
         .module('app')
-        .controller('Dashboard', Dashboard);
+        .controller('DashboardController', DashboardController);
 
-    function Dashboard(common, dataservice) {
+    function DashboardController(common, dataservice) {
     }
     ```
 
@@ -1486,7 +1488,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
     ```javascript
     /* avoid - not minification-safe*/
-    angular.module('app').controller('Dashboard', d);function d(a, b) { }
+    angular.module('app').controller('DashboardController', d);function d(a, b) { }
     ```
 
 ### Manually Identify Dependencies
@@ -1514,10 +1516,10 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     /* avoid */
     angular
       .module('app')
-      .controller('Dashboard',
-          ['$location', '$routeParams', 'common', 'dataservice', Dashboard]);
+      .controller('DashboardController',
+          ['$location', '$routeParams', 'common', 'dataservice', DashboardController]);
 
-    function Dashboard($location, $routeParams, common, dataservice) {
+    function DashboardController($location, $routeParams, common, dataservice) {
     }
     ```
 
@@ -1525,11 +1527,11 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     /* recommended */
     angular
         .module('app')
-        .controller('Dashboard', Dashboard);
+        .controller('DashboardController', DashboardController);
 
-    Dashboard.$inject = ['$location', '$routeParams', 'common', 'dataservice'];
+    DashboardController.$inject = ['$location', '$routeParams', 'common', 'dataservice'];
 
-    function Dashboard($location, $routeParams, common, dataservice) {
+    function DashboardController($location, $routeParams, common, dataservice) {
     }
     ```
 
@@ -1557,7 +1559,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     function outer() {
         var ddo = {
             controller: DashboardPanelController,
-            controllerAs: 'vm'
+            controllerAs: 'dashboardvm'
         };
         return ddo;
     }
@@ -1583,7 +1585,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
             .when('/avengers', {
                 templateUrl: 'avengers.html',
                 controller: 'AvengersController',
-                controllerAs: 'vm',
+                controllerAs: 'avengersVm',
                 resolve: {
                     moviesPrepService: moviesPrepService
                 }
@@ -1616,16 +1618,16 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     ```javascript
     angular
         .module('app')
-        .controller('Avengers', Avengers);
+        .controller('AvengersController', AvengersController);
 
     /* @ngInject */
-    function Avengers(storageService, avengerService) {
-        var vm = this;
-        vm.heroSearch = '';
-        vm.storeHero = storeHero;
+    function AvengersController(storageService, avengerService) {
+        var avengersVm = this;
+        avengersVm.heroSearch = '';
+        avengersVm.storeHero = storeHero;
 
         function storeHero() {
-            var hero = avengerService.find(vm.heroSearch);
+            var hero = avengerService.find(avengersVm.heroSearch);
             storageService.save(hero.name, hero);
         }
     }
@@ -1636,21 +1638,21 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     ```javascript
     angular
         .module('app')
-        .controller('Avengers', Avengers);
+        .controller('AvengersController', AvengersController);
 
     /* @ngInject */
-    function Avengers(storageService, avengerService) {
-        var vm = this;
-        vm.heroSearch = '';
-        vm.storeHero = storeHero;
+    function AvengersController(storageService, avengerService) {
+        var avengersVm = this;
+        avengersVm.heroSearch = '';
+        avengersVm.storeHero = storeHero;
 
         function storeHero() {
-            var hero = avengerService.find(vm.heroSearch);
+            var hero = avengerService.find(avengersVm.heroSearch);
             storageService.save(hero.name, hero);
         }
     }
 
-    Avengers.$inject = ['storageService', 'avengerService'];
+    AvengersController.$inject = ['storageService', 'avengerService'];
     ```
 
     Note: If `ng-annotate` detects injection has already been made (e.g. `@ngInject` was detected), it will not duplicate the `$inject` code.
@@ -1663,8 +1665,8 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
         $routeProvider
             .when('/avengers', {
                 templateUrl: 'avengers.html',
-                controller: 'Avengers',
-                controllerAs: 'vm',
+                controller: 'AvengersController',
+                controllerAs: 'avengersVm',
                 resolve: { /* @ngInject */
                     moviesPrepService: function(movieService) {
                         return movieService.getMovies();
@@ -2942,6 +2944,10 @@ Client-side routing is important for creating a navigation flow between views an
     *Why?*: The syntax is quite similar to the Angular router and is easy to migrate to UI Router.
 
   - Note: You can use a provider such as the `routerHelperProvider` shown below to help configure states across files, during the run phase.
+  
+  - Note: Use spinal-case convention for `url` in route configuration. For example, use `url: '/user-management'` instead of `url: '/userManagement'`
+  
+  - Note: Use camelCase convention for state names in the route configuration for AngularUI Router. For example, `$stateProvider.state('app.userManagement', ...)`.
 
     ```javascript
     // customers.routes.js
